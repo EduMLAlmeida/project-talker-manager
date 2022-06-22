@@ -12,6 +12,10 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
+app.get('/talker', (req, res) => {
+  res.status(200).json({ message: 'Abrindo o PR para o amigo marciano!'});
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
