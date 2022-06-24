@@ -14,12 +14,17 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
-app.get('/talker', (req, res) => {
+app.get('/talker', (_req, res) => {
   res.status(200).json(talkers);
 });
 
-app.get('/teste', (req, res) => {
-  res.send('teste45');
+app.get('/talker/:id', (req, res) => {
+  const { id } = req.params;
+  const talker = talkers.find((element) => element.id === Number(id));
+  if (!talker) {
+    return res.status(404).json({ message: 'Pessoa não encontrada' });
+  }
+  res.status(200).json(talker);
 });
 
 app.listen(PORT, () => {
