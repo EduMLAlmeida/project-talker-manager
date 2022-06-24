@@ -7,13 +7,19 @@ app.use(bodyParser.json());
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
 
+const talkers = require('./talker.json');
+
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
 app.get('/talker', (req, res) => {
-  res.status(200).json({ message: 'Abrindo o PR para o amigo marciano!'});
+  res.status(200).json(talkers);
+});
+
+app.get('/teste', (req, res) => {
+  res.send('teste45');
 });
 
 app.listen(PORT, () => {
