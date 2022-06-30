@@ -103,6 +103,17 @@ const deleteTalker = async (res, id) => {
   await fs.writeFile(talkersFile, newTalkers);
 };
 
+const searchTalker = async (q) => {
+  const talkers = JSON.parse(await fs.readFile(talkersFile));
+  const responseArray = [];
+  talkers.forEach((talker) => {
+    if (talker.name.includes(q)) {
+      responseArray.push(talker);
+    }
+  });
+  return responseArray;
+};
+
 const talkerDataCodeReturner3 = (testResults, res) => {
   if (!testResults[8]) {
     return res.status(400).json({ message: 'O campo "rate" deve ser um inteiro de 1 à 5' });
@@ -141,6 +152,22 @@ app.get('/', (_request, response) => {
 app.get('/talker', async (_req, res) => {
   const talkers = JSON.parse(await fs.readFile(talkersFile));
   return res.status(200).json(talkers);
+});
+
+app.get('/talker/search', async (req, res) => {
+  const { q } = req.query;
+  if (!req.headers.authorization) {
+    return res.status(401).json({ message: 'Token não encontrado' });
+  }
+  if (req.headers.authorization.length !== 16) {
+    return res.status(401).json({ message: 'Token inválido' });
+  }
+  const searchResult = await searchTalker(q);
+  if (q === '') {
+    const talkers = JSON.parse(await fs.readFile(talkersFile));
+    return res.status(200).json(talkers);
+  }
+  return res.status(200).json(searchResult);
 });
 
 app.get('/talker/:id', async (req, res) => {
