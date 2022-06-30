@@ -233,7 +233,7 @@ app.delete('/talker/:id', (req, res) => {
   if (req.headers.authorization.length !== 16) {
     return res.status(401).json({ message: 'Token inválido' });
   }
-  deleteTalker(res, id);
+  deleteTalker(id);
   return res.status(204).end();
 });
 
