@@ -92,13 +92,15 @@ const updateTalker = async (talkerData, res, id) => {
   return res.status(200).json(talkers[id - 1]);
 };
 
-const deleteTalker = async (res, id) => {
+const deleteTalker = async (id) => {
   const talkers = JSON.parse(await fs.readFile(talkersFile));
+  let talkerToDeleteIndex;
   talkers.forEach((talker, index) => {
     if (talker.id === Number(id)) {
-      talkers.splice(index);
+      talkerToDeleteIndex = index;
     }
   });
+  talkers.splice(talkerToDeleteIndex);
   const newTalkers = JSON.stringify(talkers);
   await fs.writeFile(talkersFile, newTalkers);
 };
