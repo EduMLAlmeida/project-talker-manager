@@ -57,10 +57,20 @@ const createToken = () => {
   return token;
 };
 
+// lógica para identificar maior ID existente retirada de https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Math/max
+const generateId = (talkers) => {
+const idCollection = [];
+talkers.forEach((talker) => {
+  idCollection.push(talker.id);
+});
+const maxId = idCollection.reduce((a, b) => Math.max(a, b), -Infinity);
+return maxId + 1;
+};
+
 const saveTalker = async (talkerData, res) => {
   const talkers = JSON.parse(await fs.readFile(talkersFile));
   const data = talkerData;
-  const id = talkers.length + 1;
+  const id = generateId(talkers);
   data.id = id;
   talkers.push(data);
   const newTalkers = JSON.stringify(talkers);
@@ -72,10 +82,25 @@ const updateTalker = async (talkerData, res, id) => {
   const talkers = JSON.parse(await fs.readFile(talkersFile));
   const data = talkerData;
   data.id = Number(id);
-  talkers[id - 1] = data;
+  talkers.forEach((talker, index) => {
+    if (talker.id === Number(id)) {
+      talkers[index] = data;
+    }
+  });
   const newTalkers = JSON.stringify(talkers);
   await fs.writeFile(talkersFile, newTalkers);
   return res.status(200).json(talkers[id - 1]);
+};
+
+const deleteTalker = async (res, id) => {
+  const talkers = JSON.parse(await fs.readFile(talkersFile));
+  talkers.forEach((talker, index) => {
+    if (talker.id === Number(id)) {
+      talkers.splice(index);
+    }
+  });
+  const newTalkers = JSON.stringify(talkers);
+  await fs.writeFile(talkersFile, newTalkers);
 };
 
 const talkerDataCodeReturner3 = (testResults, res) => {
@@ -169,6 +194,18 @@ app.put('/talker/:id', (req, res) => {
   } else {    
     talkerDataCodeReturner(testResults, res);
   }
+});
+
+app.delete('/talker/:id', (req, res) => {
+  const { id } = req.params;
+  if (!req.headers.authorization) {
+    return res.status(401).json({ message: 'Token não encontrado' });
+  }
+  if (req.headers.authorization.length !== 16) {
+    return res.status(401).json({ message: 'Token inválido' });
+  }
+  deleteTalker(res, id);
+  return res.status(204).end();
 });
 
 app.listen(PORT, async () => {
