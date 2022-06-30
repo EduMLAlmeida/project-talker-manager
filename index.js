@@ -13,7 +13,7 @@ const talkersFile = './talker.json';
 const fs = require('fs/promises');
 const validateTalkerData = require('./validationHelpers');
 
-// emailRegex retirado do projeto recipes app
+// emailRegex retirado do projeto recipes app.
 const validateTests = (email, password) => {
   const testResults = [];
   const emailCheck = email !== '' && email !== undefined;
